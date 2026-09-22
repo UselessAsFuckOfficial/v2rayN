@@ -2,14 +2,11 @@ namespace ServiceLib.Models.Dto;
 
 /// <summary>
 /// One step of a workflow. Kept as a plain serializable DTO so it can be
-/// persisted inside <see cref="Entities.WorkflowItem.StepsJson"/>. Implements
-/// <see cref="INotifyPropertyChanged"/> so the step grid reacts to edits.
+/// persisted inside <see cref="Entities.WorkflowItem.StepsJson"/>.
 /// </summary>
 [Serializable]
-public class WorkflowStep : INotifyPropertyChanged
+public class WorkflowStep
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
-
     public EWorkflowAction Action { get; set; }
 
     public bool Enabled { get; set; } = true;
