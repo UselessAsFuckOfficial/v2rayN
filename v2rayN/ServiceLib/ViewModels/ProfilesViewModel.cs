@@ -87,6 +87,7 @@ public partial class ProfilesViewModel : MyReactiveObject
     public ReactiveCommand<RxVoid, RxVoid> AddSubCmd { get; }
     public ReactiveCommand<RxVoid, RxVoid> EditSubCmd { get; }
     public ReactiveCommand<RxVoid, RxVoid> DeleteSubCmd { get; }
+    public ReactiveCommand<RxVoid, RxVoid> WorkflowCmd { get; }
 
     #endregion Menu
 
@@ -237,6 +238,7 @@ public partial class ProfilesViewModel : MyReactiveObject
         {
             await DeleteSubAsync();
         });
+        WorkflowCmd = ReactiveCommand.Create(() => AppEvents.WorkflowRequested.Publish());
 
         #endregion WhenAnyValue && ReactiveCommand
 
@@ -655,6 +657,78 @@ public partial class ProfilesViewModel : MyReactiveObject
         await RefreshServers();
         NoticeManager.Instance.Enqueue(string.Format(ResUI.RemoveInvalidServerResultTip, count));
     }
+
+    #region Workflow helpers
+
+    /// <summary>Run a test over a whole group. Completes once the test run finished.</summary>
+    public async Task TestServersAsync(string? subId, ESpeedActionType actionType)
+    {
+        var lstSelected = await GetProfilesForGroup(subId);
+        if (lstSelected.Count == 0)
+        {
+            return;
+        }
+        _speedtestService ??= new SpeedtestService(_config, async result =>
+        {
+            RxSchedulers.MainThreadScheduler.Schedule(() => _ = SetSpeedTestResult(result));
+            await Task.CompletedTask;
+        });
+        await _speedtestService.RunLoop(actionType, lstSelected);
+        await RefreshServers();
+    }
+
+    /// <summary>Sort a whole group by a column and persist the new order.</summary>
+    public async Task SortServersAsync(string? subId, string colName, bool asc)
+    {
+        if (await ConfigHandler.SortServers(_config, subId, colName, asc) == 0)
+        {
+            await RefreshServers();
+        }
+    }
+
+    /// <summary>Remove duplicates inside a group and return how many were removed.</summary>
+    public async Task<int> DedupServersAsync(string? subId)
+    {
+        var tuple = await ConfigHandler.DedupServerList(_config, subId);
+        if (tuple.Item1 > 0)
+        {
+            await RefreshServers();
+        }
+        return tuple.Item1;
+    }
+
+    /// <summary>Remove servers with an invalid test result and return how many were removed.</summary>
+    public async Task<int> RemoveInvalidServersAsync(string? subId)
+    {
+        var count = await ConfigHandler.RemoveInvalidServerResult(_config, subId);
+        await RefreshServers();
+        return count;
+    }
+
+    /// <summary>Select the first server of a group as default.</summary>
+    public async Task SetDefaultServerForGroupAsync(string? subId)
+    {
+        var lstModel = await AppManager.Instance.ProfileModels(subId ?? _config.SubIndexId, string.Empty);
+        var first = lstModel?.OrderBy(t => t.Sort).FirstOrDefault();
+        if (first is null)
+        {
+            return;
+        }
+        await SetDefaultServer(first.IndexId);
+    }
+
+    private async Task<List<ProfileItem>> GetProfilesForGroup(string? subId)
+    {
+        var lstModel = await AppManager.Instance.ProfileModels(subId ?? _config.SubIndexId, string.Empty);
+        if (lstModel is not { Count: > 0 })
+        {
+            return [];
+        }
+        var ids = lstModel.Select(t => t.IndexId).ToList();
+        return await AppManager.Instance.GetProfileItemsByIndexIds(ids) ?? [];
+    }
+
+    #endregion Workflow helpers
 
     //move server
     private async Task MoveToGroup()
