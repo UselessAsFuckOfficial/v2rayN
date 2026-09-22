@@ -18,7 +18,7 @@
     Style="{StaticResource WindowGlobal}"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <Grid Margin="{StaticResource MarginTopBottom8}">
+    <Grid Margin="{StaticResource Margin8}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -28,7 +28,7 @@
 
         <StackPanel
             Grid.Row="0"
-            Margin="{StaticResource MarginTopBottom8}"
+            Margin="{StaticResource Margin8}"
             Orientation="Horizontal">
             <TextBlock
                 Margin="{StaticResource MarginRight8}"
@@ -40,7 +40,7 @@
                 VerticalAlignment="Center" />
             <CheckBox
                 x:Name="togEnable"
-                Margin="{StaticResource MarginLeftRight16}"
+                Margin="{StaticResource MarginLeftRight8}"
                 VerticalAlignment="Center"
                 Content="{x:Static resx:ResUI.LvWorkflowEnabled}" />
         </StackPanel>
@@ -121,7 +121,7 @@
 
         <StackPanel
             Grid.Row="3"
-            Margin="{StaticResource MarginTopBottom8}"
+            Margin="{StaticResource Margin8}"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
             <Button
