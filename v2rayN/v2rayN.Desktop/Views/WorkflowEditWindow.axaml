@@ -51,13 +51,7 @@
                 x:Name="cmbStepAction"
                 Width="200"
                 ItemsSource="{Binding ActionNames}"
-                SelectedItem="{Binding SelectedActionName}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="x:String">
-                        <TextBlock Text="{Binding}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+                SelectedItem="{Binding SelectedActionName}" />
             <Button
                 x:Name="btnAddStep"
                 Margin="{StaticResource MarginLr8}"
@@ -102,13 +96,7 @@
                         <DataTemplate DataType="vmd:WorkflowStep">
                             <ComboBox
                                 ItemsSource="{Binding $parent[DataGrid].((vms:WorkflowEditViewModel)DataContext).ActionNames}"
-                                SelectedItem="{Binding ActionDisplay}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate x:DataType="x:String">
-                                        <TextBlock Text="{Binding}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                SelectedItem="{Binding ActionDisplay}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -119,13 +107,7 @@
                         <DataTemplate DataType="vmd:WorkflowStep">
                             <ComboBox
                                 ItemsSource="{Binding $parent[DataGrid].((vms:WorkflowEditViewModel)DataContext).GroupNames}"
-                                SelectedItem="{Binding SubDisplay}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate x:DataType="x:String">
-                                        <TextBlock Text="{Binding}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                SelectedItem="{Binding SubDisplay}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

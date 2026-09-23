@@ -30,7 +30,14 @@ public class WorkflowHandlerTests
         var workflow = new WorkflowItem { Id = "w1", Remarks = "nightly" };
         List<WorkflowStep> steps =
         [
-            new() { Action = EWorkflowAction.SortServers, SubDisplay = "Group A", Parameter = "DelayVal" },
+            new()
+            {
+                Action = EWorkflowAction.SortServers,
+                SubDisplay = "Group A",
+                Parameter = "DelayVal",
+                ActionOptions = ["SortServers"],
+                GroupOptions = ["Group A"],
+            },
         ];
 
         WorkflowHandler.SaveSteps(workflow, steps);
@@ -38,6 +45,8 @@ public class WorkflowHandlerTests
         await workflow.StepsJson.Contains("Group A").Should().BeFalse();
         await workflow.StepsJson.Contains("SubDisplay").Should().BeFalse();
         await workflow.StepsJson.Contains("ActionDisplay").Should().BeFalse();
+        await workflow.StepsJson.Contains("ActionOptions").Should().BeFalse();
+        await workflow.StepsJson.Contains("GroupOptions").Should().BeFalse();
     }
 
     [Test]

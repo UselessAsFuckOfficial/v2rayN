@@ -40,4 +40,15 @@ public class WorkflowStep
     /// </summary>
     [JsonIgnore]
     public string? SubDisplay { get; set; }
+
+    /// <summary>Editor-only action choices, so the step grid can bind its dropdown to the row item.</summary>
+    [JsonIgnore]
+    public IReadOnlyList<string> ActionOptions { get; set; } = [];
+
+    /// <summary>
+    /// Editor-only group choices. This is the editor's live collection, so subscriptions
+    /// that finish loading after a row was created still reach that row's dropdown.
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<string> GroupOptions { get; set; } = [];
 }

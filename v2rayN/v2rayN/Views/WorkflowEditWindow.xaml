@@ -51,13 +51,7 @@
                     x:Name="cmbStepAction"
                     Width="220"
                     materialDesign:HintAssist.Hint="{x:Static resx:ResUI.WorkflowStepAction}"
-                    Style="{StaticResource DefComboBox}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                    Style="{StaticResource DefComboBox}" />
                 <Button
                     x:Name="btnAddStep"
                     Content="{x:Static resx:ResUI.WorkflowStepAdd}"
@@ -99,17 +93,9 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <ComboBox
-                                ItemsSource="{Binding DataContext.ActionNames, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                ItemsSource="{Binding ActionOptions}"
                                 SelectedItem="{Binding ActionDisplay, UpdateSourceTrigger=PropertyChanged}"
-                                Style="{StaticResource MaterialDesignDataGridComboBox}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock
-                                            Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
-                                            Text="{Binding}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                Style="{StaticResource MaterialDesignDataGridComboBox}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -119,17 +105,9 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <ComboBox
-                                ItemsSource="{Binding DataContext.GroupNames, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                ItemsSource="{Binding GroupOptions}"
                                 SelectedItem="{Binding SubDisplay, UpdateSourceTrigger=PropertyChanged}"
-                                Style="{StaticResource MaterialDesignDataGridComboBox}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock
-                                            Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
-                                            Text="{Binding}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                Style="{StaticResource MaterialDesignDataGridComboBox}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

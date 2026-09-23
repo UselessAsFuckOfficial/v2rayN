@@ -23,6 +23,15 @@ public partial class WorkflowEditViewModel : MyReactiveObject, ICloseable
     /// <summary>Group choices for the step editor's "Group" column.</summary>
     public BulkObservableCollection<string> GroupNames { get; } = [];
 
+    private void ApplyStepOptions()
+    {
+        foreach (var step in Steps)
+        {
+            step.ActionOptions = ActionNames;
+            step.GroupOptions = GroupNames;
+        }
+    }
+
     public ReactiveCommand<RxVoid, RxVoid> AddStepCmd { get; }
     public ReactiveCommand<RxVoid, RxVoid> DeleteStepCmd { get; }
     public ReactiveCommand<RxVoid, RxVoid> StepUpCmd { get; }
@@ -61,6 +70,7 @@ public partial class WorkflowEditViewModel : MyReactiveObject, ICloseable
             map.TryGetValue(step.SubId, out var remarks);
             step.SubDisplay = remarks ?? ResUI.AllGroupServers;
         }
+        ApplyStepOptions();
     }
 
     /// <summary>Turn the editor's group name back into a subscription id before saving.</summary>
@@ -81,6 +91,7 @@ public partial class WorkflowEditViewModel : MyReactiveObject, ICloseable
     private void LoadSteps(List<WorkflowStep> steps)
     {
         Steps.ReplaceRange(steps);
+        ApplyStepOptions();
         SelectedStep = Steps.FirstOrDefault();
     }
 
@@ -107,6 +118,8 @@ public partial class WorkflowEditViewModel : MyReactiveObject, ICloseable
         {
             step.Action = action;
         }
+        step.ActionOptions = ActionNames;
+        step.GroupOptions = GroupNames;
         Steps.Add(step);
         SelectedStep = step;
     }
