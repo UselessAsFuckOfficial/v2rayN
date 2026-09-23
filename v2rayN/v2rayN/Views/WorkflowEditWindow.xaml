@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:base="clr-namespace:v2rayN.Base"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveui="http://reactiveui.net"
     xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
@@ -47,11 +46,6 @@
 
         <ToolBarTray Grid.Row="1" DockPanel.Dock="Top">
             <ToolBar Style="{StaticResource MaterialDesignToolBar}">
-                <ComboBox
-                    x:Name="cmbStepAction"
-                    Width="220"
-                    materialDesign:HintAssist.Hint="{x:Static resx:ResUI.WorkflowStepAction}"
-                    Style="{StaticResource DefComboBox}" />
                 <Button
                     x:Name="btnAddStep"
                     Content="{x:Static resx:ResUI.WorkflowStepAdd}"
@@ -111,10 +105,19 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn
+                <DataGridTemplateColumn
                     Width="*"
-                    Binding="{Binding Parameter, UpdateSourceTrigger=PropertyChanged}"
-                    Header="{x:Static resx:ResUI.WorkflowStepParameter}" />
+                    Header="{x:Static resx:ResUI.WorkflowStepParameter}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox
+                                ItemsSource="{Binding ParameterOptions}"
+                                IsEnabled="{Binding HasParameter}"
+                                SelectedItem="{Binding ParameterText, UpdateSourceTrigger=PropertyChanged}"
+                                Style="{StaticResource MaterialDesignDataGridComboBox}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridCheckBoxColumn
                     Width="110"
                     Binding="{Binding BoolParameter, UpdateSourceTrigger=PropertyChanged}"

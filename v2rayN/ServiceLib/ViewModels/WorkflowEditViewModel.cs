@@ -13,9 +13,6 @@ public partial class WorkflowEditViewModel : MyReactiveObject, ICloseable
     [Reactive]
     public partial WorkflowStep SelectedStep { get; set; }
 
-    [Reactive]
-    public partial string SelectedActionName { get; set; }
-
     public BulkObservableCollection<WorkflowStep> Steps { get; } = [];
 
     public List<string> ActionNames { get; } = Utils.GetEnumNames<EWorkflowAction>();
@@ -29,6 +26,7 @@ public partial class WorkflowEditViewModel : MyReactiveObject, ICloseable
         {
             step.ActionOptions = ActionNames;
             step.GroupOptions = GroupNames;
+            step.Parameter = WorkflowStepOptions.Normalize(step.Action, step.Parameter);
         }
     }
 
@@ -113,13 +111,11 @@ public partial class WorkflowEditViewModel : MyReactiveObject, ICloseable
 
     private void AddStep()
     {
-        var step = new WorkflowStep();
-        if (Enum.TryParse<EWorkflowAction>(SelectedActionName, out var action))
+        var step = new WorkflowStep
         {
-            step.Action = action;
-        }
-        step.ActionOptions = ActionNames;
-        step.GroupOptions = GroupNames;
+            ActionOptions = ActionNames,
+            GroupOptions = GroupNames,
+        };
         Steps.Add(step);
         SelectedStep = step;
     }

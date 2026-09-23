@@ -43,15 +43,6 @@
             Grid.Row="1"
             Margin="{StaticResource Margin4}"
             Orientation="Horizontal">
-            <TextBlock
-                Margin="{StaticResource MarginLr8}"
-                VerticalAlignment="Center"
-                Text="{x:Static resx:ResUI.WorkflowStepAction}" />
-            <ComboBox
-                x:Name="cmbStepAction"
-                Width="200"
-                ItemsSource="{Binding ActionNames}"
-                SelectedItem="{Binding SelectedActionName}" />
             <Button
                 x:Name="btnAddStep"
                 Margin="{StaticResource MarginLr8}"
@@ -111,10 +102,18 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn
+                <DataGridTemplateColumn
                     Width="*"
-                    Binding="{Binding Parameter, Mode=TwoWay}"
-                    Header="{x:Static resx:ResUI.WorkflowStepParameter}" />
+                    Header="{x:Static resx:ResUI.WorkflowStepParameter}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="vmd:WorkflowStep">
+                            <ComboBox
+                                ItemsSource="{Binding ParameterOptions}"
+                                IsEnabled="{Binding HasParameter}"
+                                SelectedItem="{Binding ParameterText, Mode=TwoWay}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridCheckBoxColumn
                     Width="110"
                     Binding="{Binding BoolParameter, Mode=TwoWay}"

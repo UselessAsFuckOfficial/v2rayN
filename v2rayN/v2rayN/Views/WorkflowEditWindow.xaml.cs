@@ -14,9 +14,6 @@ public partial class WorkflowEditWindow
             this.Bind(ViewModel, vm => vm.SelectedSource.Remarks, v => v.txtRemarks.Text).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.SelectedSource.Enabled, v => v.togEnable.IsChecked).DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.ActionNames, v => v.cmbStepAction.ItemsSource).DisposeWith(disposables);
-            this.Bind(ViewModel, vm => vm.SelectedActionName, v => v.cmbStepAction.Text).DisposeWith(disposables);
-
             this.OneWayBind(ViewModel, vm => vm.Steps, v => v.lstSteps.ItemsSource).DisposeWith(disposables);
             this.Bind(ViewModel, vm => vm.SelectedStep, v => v.lstSteps.SelectedItem).DisposeWith(disposables);
 

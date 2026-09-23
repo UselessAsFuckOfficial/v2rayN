@@ -47,6 +47,75 @@ public class WorkflowHandlerTests
         await workflow.StepsJson.Contains("ActionDisplay").Should().BeFalse();
         await workflow.StepsJson.Contains("ActionOptions").Should().BeFalse();
         await workflow.StepsJson.Contains("GroupOptions").Should().BeFalse();
+        await workflow.StepsJson.Contains("ParameterOptions").Should().BeFalse();
+        await workflow.StepsJson.Contains("ParameterText").Should().BeFalse();
+    }
+
+    [Test]
+    public async Task Parameters_ShouldOfferOnlyValuesTheRunnerAccepts()
+    {
+        // These actions take no parameter at all.
+        await WorkflowStepOptions.ParametersFor(EWorkflowAction.UpdateSubscriptions).Should().BeEmpty();
+        await WorkflowStepOptions.ParametersFor(EWorkflowAction.DeduplicateServers).Should().BeEmpty();
+        await WorkflowStepOptions.ParametersFor(EWorkflowAction.RemoveInvalidServers).Should().BeEmpty();
+        await WorkflowStepOptions.ParametersFor(EWorkflowAction.SetDefaultServer).Should().BeEmpty();
+
+        // The sort column placeholder is not sortable, so offering it would be a no-op.
+        await WorkflowStepOptions.ParametersFor(EWorkflowAction.SortServers)
+            .Should().NotContain(nameof(EServerColName.Def));
+        await WorkflowStepOptions.ParametersFor(EWorkflowAction.SortServers)
+            .Should().Contain(nameof(EServerColName.SpeedVal));
+
+        await WorkflowStepOptions.ParametersFor(EWorkflowAction.TestServers)
+            .Should().Contain(nameof(ESpeedActionType.Speedtest));
+        await WorkflowStepOptions.ParametersFor(EWorkflowAction.SystemProxy)
+            .Should().Contain(nameof(ESysProxyType.ForcedChange));
+    }
+
+    [Test]
+    public async Task Normalize_ShouldReplaceParameterTheActionDoesNotAccept()
+    {
+        // A test type makes no sense for a sort, so it falls back to the default column.
+        await WorkflowStepOptions.Normalize(EWorkflowAction.SortServers, nameof(ESpeedActionType.Realping))
+            .Should().BeEqualTo(nameof(EServerColName.DelayVal));
+
+        // An action with no parameter must not keep a leftover one.
+        await WorkflowStepOptions.Normalize(EWorkflowAction.DeduplicateServers, nameof(EServerColName.DelayVal))
+            .Should().BeNull();
+
+        // A valid parameter is left alone.
+        await WorkflowStepOptions.Normalize(EWorkflowAction.TestServers, nameof(ESpeedActionType.Speedtest))
+            .Should().BeEqualTo(nameof(ESpeedActionType.Speedtest));
+    }
+
+    [Test]
+    public async Task Step_ShouldDropParameterWhenActionChanges()
+    {
+        var step = new WorkflowStep
+        {
+            Action = EWorkflowAction.SortServers,
+            Parameter = nameof(EServerColName.SpeedVal),
+        };
+
+        step.Action = EWorkflowAction.SystemProxy;
+
+        await step.Parameter.Should().BeEqualTo(nameof(ESysProxyType.ForcedClear));
+        await step.ParameterOptions.Should().Contain(nameof(ESysProxyType.ForcedChange));
+        await step.ParameterOptions.Should().NotContain(nameof(EServerColName.SpeedVal));
+    }
+
+    [Test]
+    public async Task Step_ShouldNotifyDependentCellsWhenActionChanges()
+    {
+        var step = new WorkflowStep();
+        var changed = new List<string?>();
+        step.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+
+        step.Action = EWorkflowAction.TestServers;
+
+        // The parameter dropdown binds to both of these, so both must refresh.
+        await changed.Should().Contain(nameof(WorkflowStep.ParameterOptions));
+        await changed.Should().Contain(nameof(WorkflowStep.ParameterText));
     }
 
     [Test]
