@@ -607,7 +607,7 @@
     <value>Enabled</value>
   </data>
   <data name="WorkflowParamHint" xml:space="preserve">
-    <value>Optional: sort column, test type or proxy mode</value>
+    <value>Option</value>
   </data>
   <data name="WorkflowNoStepTip" xml:space="preserve">
     <value>The workflow has no enabled step</value>

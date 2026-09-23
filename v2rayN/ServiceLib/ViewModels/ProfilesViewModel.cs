@@ -705,16 +705,30 @@ public partial class ProfilesViewModel : MyReactiveObject
         return count;
     }
 
-    /// <summary>Select the first server of a group as default.</summary>
-    public async Task SetDefaultServerForGroupAsync(string? subId)
+    /// <summary>
+    /// Activate the first or last server of a group, using the persisted sort order (the
+    /// order the server list displays). <see cref="EServerSelectType.First"/> therefore
+    /// picks the topmost row, so a sort step run beforehand decides which server wins.
+    /// </summary>
+    public async Task SetDefaultServerForGroupAsync(string? subId, EServerSelectType selectType)
     {
         var lstModel = await AppManager.Instance.ProfileModels(subId ?? _config.SubIndexId, string.Empty);
-        var first = lstModel?.OrderBy(t => t.Sort).FirstOrDefault();
-        if (first is null)
+        if (lstModel is not { Count: > 0 })
         {
             return;
         }
-        await SetDefaultServer(first.IndexId);
+
+        // Sort is persisted on ProfileExItem, not on ProfileItem, so it is not part of
+        // ProfileModels. Look it up per row instead of ordering by the always-zero default.
+        var ordered = selectType == EServerSelectType.Last
+            ? lstModel.OrderByDescending(t => ProfileExManager.Instance.GetSort(t.IndexId))
+            : lstModel.OrderBy(t => ProfileExManager.Instance.GetSort(t.IndexId));
+        var target = ordered.FirstOrDefault();
+        if (target is null)
+        {
+            return;
+        }
+        await SetDefaultServer(target.IndexId);
     }
 
     private async Task<List<ProfileItem>> GetProfilesForGroup(string? subId)

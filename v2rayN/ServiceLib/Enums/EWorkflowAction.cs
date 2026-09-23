@@ -20,8 +20,8 @@ public enum EWorkflowAction
     /// <summary>Remove servers whose last test result was invalid (timeout).</summary>
     RemoveInvalidServers = 4,
 
-    /// <summary>Select the best (first) server of the current group as default.</summary>
-    SetDefaultServer = 5,
+    /// <summary>Activate the best (first) server of the current group, as the server list orders it.</summary>
+    ActivateServer = 5,
 
     /// <summary>Set or clear the system proxy mode.</summary>
     SystemProxy = 6,

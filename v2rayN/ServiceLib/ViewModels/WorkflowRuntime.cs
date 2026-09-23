@@ -35,9 +35,9 @@ public sealed class WorkflowRuntime(ProfilesViewModel profiles, Func<string?, bo
         return count;
     }
 
-    public async Task SetDefaultServer(string subId)
+    public async Task ActivateServer(string subId, EServerSelectType selectType)
     {
-        await profiles.SetDefaultServerForGroupAsync(subId);
+        await profiles.SetDefaultServerForGroupAsync(subId, selectType);
     }
 
     public Task SetSystemProxy(ESysProxyType type)

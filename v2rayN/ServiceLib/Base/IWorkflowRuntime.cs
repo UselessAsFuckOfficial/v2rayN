@@ -21,8 +21,11 @@ public interface IWorkflowRuntime
     /// <summary>Remove servers whose last test result was invalid. Returns the number of removed servers.</summary>
     Task<int> RemoveInvalidServers(string subId);
 
-    /// <summary>Select the first server of a group as the default one.</summary>
-    Task SetDefaultServer(string subId);
+    /// <summary>
+    /// Activate a server of a group. <paramref name="selectType"/> chooses the topmost or
+    /// bottom row of the group's persisted sort order.
+    /// </summary>
+    Task ActivateServer(string subId, EServerSelectType selectType);
 
     /// <summary>Set the system proxy mode.</summary>
     Task SetSystemProxy(ESysProxyType type);

@@ -65,8 +65,9 @@ public static class WorkflowHandler
                 await runtime.RemoveInvalidServers(step.SubId.IsNotEmpty() ? step.SubId : subId);
                 break;
 
-            case EWorkflowAction.SetDefaultServer:
-                await runtime.SetDefaultServer(step.SubId.IsNotEmpty() ? step.SubId : subId);
+            case EWorkflowAction.ActivateServer:
+                await runtime.ActivateServer(step.SubId.IsNotEmpty() ? step.SubId : subId,
+                    ParseServerSelectType(step.Parameter));
                 break;
 
             case EWorkflowAction.SystemProxy:
@@ -83,6 +84,11 @@ public static class WorkflowHandler
     private static ESysProxyType ParseSysProxyType(string? parameter)
     {
         return Enum.TryParse<ESysProxyType>(parameter, true, out var type) ? type : ESysProxyType.ForcedClear;
+    }
+
+    private static EServerSelectType ParseServerSelectType(string? parameter)
+    {
+        return Enum.TryParse<EServerSelectType>(parameter, true, out var type) ? type : EServerSelectType.First;
     }
 
     /// <summary>Deserialize the step list of a workflow, tolerating malformed json.</summary>

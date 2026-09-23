@@ -70,3 +70,31 @@ Local styles are defined in `v2rayN/App.xaml` (`DefComboBox`, `DefButton`,
 
 Cell editors need `UpdateSourceTrigger=PropertyChanged` to write back as the user
 types or selects.
+
+## Sort order lives on ProfileExItem
+
+`Sort` is a column of `ProfileExItem`, **not** `ProfileItem`. `AppManager.ProfileModels`
+selects neither `Sort` nor an `ORDER BY`, so a `ProfileItemModel` returned from it has
+`Sort == 0` for every row.
+
+Consequences:
+
+- `lstModel.OrderBy(t => t.Sort).FirstOrDefault()` is a no-op that returns whichever row
+  the database happened to emit first, not the topmost row the user sees. Read the value
+  with `ProfileExManager.Instance.GetSort(indexId)` instead.
+- `ProfilesViewModel.GetProfileItemsEx` joins `ProfileExItem` to restore `Sort` for the
+  grid; the raw `ProfileModels` result is not display-ordered.
+- `SortServers` assigns `(i + 1) * 10` so later inserts can land between rows. Never
+  assume the values are contiguous.
+
+## dotnet SDK in this container
+
+The SDK is not preinstalled. Install it once with:
+
+```bash
+curl -sSL -o /tmp/dotnet-install.sh https://dot.net/v1/dotnet-install.sh
+chmod +x /tmp/dotnet-install.sh
+/tmp/dotnet-install.sh --channel 10.0 --install-dir "$HOME/.dotnet"
+```
+
+Then prefix commands with `export PATH="$HOME/.dotnet:$PATH"`.

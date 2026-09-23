@@ -58,7 +58,6 @@ public class WorkflowHandlerTests
         await WorkflowStepOptions.ParametersFor(EWorkflowAction.UpdateSubscriptions).Should().BeEmpty();
         await WorkflowStepOptions.ParametersFor(EWorkflowAction.DeduplicateServers).Should().BeEmpty();
         await WorkflowStepOptions.ParametersFor(EWorkflowAction.RemoveInvalidServers).Should().BeEmpty();
-        await WorkflowStepOptions.ParametersFor(EWorkflowAction.SetDefaultServer).Should().BeEmpty();
 
         // The sort column placeholder is not sortable, so offering it would be a no-op.
         await WorkflowStepOptions.ParametersFor(EWorkflowAction.SortServers)
@@ -70,6 +69,10 @@ public class WorkflowHandlerTests
             .Should().Contain(nameof(ESpeedActionType.Speedtest));
         await WorkflowStepOptions.ParametersFor(EWorkflowAction.SystemProxy)
             .Should().Contain(nameof(ESysProxyType.ForcedChange));
+
+        // Which server a group activates is a fixed choice, not free text.
+        await WorkflowStepOptions.ParametersFor(EWorkflowAction.ActivateServer)
+            .Should().Contain(nameof(EServerSelectType.Last));
     }
 
     [Test]
@@ -150,7 +153,7 @@ public class WorkflowHandlerTests
             new() { Action = EWorkflowAction.SortServers, Parameter = nameof(EServerColName.SpeedVal), BoolParameter = false },
             new() { Action = EWorkflowAction.TestServers, Parameter = nameof(ESpeedActionType.Speedtest) },
             new() { Action = EWorkflowAction.RemoveInvalidServers, Enabled = false },
-            new() { Action = EWorkflowAction.SetDefaultServer },
+            new() { Action = EWorkflowAction.ActivateServer, Parameter = nameof(EServerSelectType.First) },
             new() { Action = EWorkflowAction.SystemProxy, Parameter = nameof(ESysProxyType.ForcedChange) },
         ]);
 
@@ -163,7 +166,7 @@ public class WorkflowHandlerTests
             "dedup:default-sub",
             "sort:default-sub:SpeedVal:False",
             "test:default-sub:Speedtest",
-            "default:default-sub",
+            "activate:default-sub:First",
             "sysproxy:ForcedChange",
         ]);
     }
@@ -193,6 +196,7 @@ public class WorkflowHandlerTests
             new() { Action = EWorkflowAction.SortServers, Parameter = null },
             new() { Action = EWorkflowAction.TestServers, Parameter = "not-a-test-type" },
             new() { Action = EWorkflowAction.SystemProxy, Parameter = null },
+            new() { Action = EWorkflowAction.ActivateServer, Parameter = "not-a-select-type" },
         ]);
 
         await WorkflowHandler.Run(new Config { SubIndexId = "default-sub" }, workflow, runtime);
@@ -202,6 +206,7 @@ public class WorkflowHandlerTests
             $"sort:default-sub:{nameof(EServerColName.DelayVal)}:False",
             $"test:default-sub:{nameof(ESpeedActionType.Realping)}",
             $"sysproxy:{nameof(ESysProxyType.ForcedClear)}",
+            $"activate:default-sub:{nameof(EServerSelectType.First)}",
         ]);
     }
 
@@ -258,9 +263,9 @@ public class WorkflowHandlerTests
             return Task.FromResult(0);
         }
 
-        public Task SetDefaultServer(string subId)
+        public Task ActivateServer(string subId, EServerSelectType selectType)
         {
-            Calls.Add($"default:{subId}");
+            Calls.Add($"activate:{subId}:{selectType}");
             return Task.CompletedTask;
         }
 
